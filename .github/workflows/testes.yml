@@ -1,0 +1,25 @@
+name: testes
+
+# Roda a cada push e a cada pull request. O resultado vira a
+# bolinha verde ou vermelha que aparece no badge do README.
+on:
+  push:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # npm ci instala exatamente o que esta no package-lock.json.
+      # npm install poderia resolver versoes diferentes das suas, e
+      # ai o CI testaria um projeto que nao e o seu.
+      - run: npm ci
+
+      - run: npm test
