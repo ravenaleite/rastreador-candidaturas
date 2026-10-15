@@ -5,7 +5,18 @@ import { criarClienteServidor } from "@/lib/supabase/servidor";
 import { validarCandidatura, type EntradaCandidatura } from "@/lib/validacao";
 import { ehStatus, podeMover } from "@/lib/status";
 
-export type EstadoCadastro = { erro?: string; ok?: boolean };
+/**
+ * Quando da erro, devolvemos junto o que a pessoa tinha digitado.
+ * O React 19 reseta um <form action={...}> depois que a acao termina,
+ * inclusive quando ela falha — sem isso, errar a data apaga os seis
+ * campos preenchidos. Os valores voltam como defaultValue e o reset
+ * cai de volta neles.
+ */
+export type EstadoCadastro = {
+  erro?: string;
+  ok?: boolean;
+  valores?: EntradaCandidatura;
+};
 
 function texto(dados: FormData, campo: string): string {
   return String(dados.get(campo) ?? "");
@@ -29,19 +40,19 @@ export async function criarCandidatura(
   // no navegador, mas aquilo e conveniencia: qualquer um desliga o
   // required pelo DevTools, entao a palavra final e aqui no servidor.
   const conferido = validarCandidatura(entrada);
-  if (!conferido.ok) return { erro: conferido.erro };
+  if (!conferido.ok) return { erro: conferido.erro, valores: entrada };
 
   const supabase = await criarClienteServidor();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { erro: "Sua sessão expirou. Entre de novo." };
+  if (!user) return { erro: "Sua sessão expirou. Entre de novo.", valores: entrada };
 
   const { error } = await supabase
     .from("candidaturas")
     .insert({ ...conferido.valor, usuario_id: user.id });
 
-  if (error) return { erro: "Não consegui salvar agora. Tente de novo." };
+  if (error) return { erro: "Não consegui salvar agora. Tente de novo.", valores: entrada };
 
   revalidatePath("/painel");
   return { ok: true };
