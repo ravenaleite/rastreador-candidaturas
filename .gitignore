@@ -14,3 +14,6 @@ next-env.d.ts
 
 # Material de estudo meu, fica na pasta mas fora do repositorio
 Mapa_Rastreador_Candidaturas.pdf
+
+# prints avulsos
+/teste-rls.png
