@@ -1,33 +1,68 @@
-/* Paleta da Ravena Leite: ciano, rosa e o preto azulado do site dela.
-   No escuro entram as cores cruas; no claro, as mesmas matizes mais
-   fechadas, porque o ciano puro da 1,86:1 sobre fundo claro e fica
-   ilegivel. Verificado contra o criterio WCAG AA. */
+/* =========================================================
+   Rastreador de candidaturas — sistema visual
+
+   Paleta da marca da Ravena Leite: ciano, rosa e o preto
+   azulado do site dela. No escuro entram as cores cruas; no
+   claro, as mesmas matizes mais fechadas, porque o ciano puro
+   da 1,86:1 sobre fundo claro e o minimo do WCAG AA e 4,5:1.
+   Os numeros medidos estao anotados ao lado de cada cor.
+
+   Regra da cor neste projeto: cor so aparece onde significa
+   alguma coisa. Ciano = acao. Rosa = proposta, o estado bom.
+   Laranja = prazo vencido. O resto e tinta e papel.
+   ========================================================= */
+
 :root {
+  /* --- cor: tema claro --- */
   --fundo:            #f7f9fc;
   --superficie:       #ffffff;
-  --tinta:            #0a0e27;
-  --tinta-fraca:      #55607a;
-  --linha:            #d9e0ec;
-  --acento:           #0070a3;  /* ciano fechado  — 5,18:1 */
-  --contraste-acento: #ffffff;  /* texto sobre o acento — 5,46:1 */
-  --proposta:         #c2005f;  /* rosa fechado   — 5,76:1 */
-  --atraso:           #b23e12;  /* 5,54:1 */
+  --superficie-2:     #eef2f8;
+  --tinta:            #0a0e27;  /* 18,02:1 */
+  --tinta-fraca:      #55607a;  /*  5,96:1 */
+  --linha:            #dde3ee;
+  --linha-forte:      #c3ccdd;
+  --acento:           #0070a3;  /*  5,18:1 */
+  --contraste-acento: #ffffff;  /*  5,46:1 sobre o acento */
+  --proposta:         #c2005f;  /*  5,76:1 */
+  --atraso:           #b23e12;  /*  5,54:1 */
+  --sombra: 0 10px 30px rgb(10 14 39 / 0.14);
+
+  /* --- espaco: escala de 4 --- */
+  --s1: 0.25rem;  --s2: 0.5rem;   --s3: 0.75rem;  --s4: 1rem;
+  --s5: 1.5rem;   --s6: 2rem;     --s7: 3rem;     --s8: 4rem;
+
+  /* --- tipo --- */
+  --t-12: 0.75rem;    --t-13: 0.8125rem;  --t-15: 0.9375rem;
+  --t-17: 1.0625rem;  --t-21: 1.3125rem;  --t-28: 1.75rem;
+  --t-44: 2.75rem;
+
+  /* --- raio: varia com a hierarquia, de proposito --- */
+  --r-sm: 6px;   /* campos e botoes */
+  --r-md: 10px;  /* cards           */
+  --r-lg: 14px;  /* paineis         */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --fundo:            #0a0e27;
     --superficie:       #121735;
-    --tinta:            #e8ecf4;
-    --tinta-fraca:      #94a3c4;
+    --superficie-2:     #0e1330;
+    --tinta:            #e8ecf4;  /* 16,05:1 */
+    --tinta-fraca:      #94a3c4;  /*  7,51:1 */
     --linha:            #232b4d;
-    --acento:           #00c8ff;  /* o ciano dela, cru — 9,69:1 */
+    --linha-forte:      #333e6b;
+    --acento:           #00c8ff;  /*  9,69:1 — o ciano dela, cru */
     --contraste-acento: #0a0e27;
-    --proposta:         #ff007f;  /* o rosa dela, cru  — 5,03:1 */
-    --atraso:           #ffa06a;  /* 9,49:1 */
+    --proposta:         #ff007f;  /*  5,03:1 — o rosa dela, cru  */
+    --atraso:           #ffa06a;  /*  9,49:1 */
+    --sombra: 0 14px 36px rgb(0 0 0 / 0.5);
     color-scheme: dark;
   }
 }
+
+/* =========================================================
+   base
+   ========================================================= */
 
 * { box-sizing: border-box; }
 
@@ -35,131 +70,495 @@ body {
   margin: 0;
   background: var(--fundo);
   color: var(--tinta);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  line-height: 1.5;
+  font-family: var(--fonte-corpo), system-ui, sans-serif;
+  font-size: var(--t-15);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  /* Datas e contagens alinham em coluna como num livro-caixa.
+     Um rastreador e isso: um registro de linhas. */
+  font-variant-numeric: tabular-nums;
 }
 
-.interno {
-  max-width: 1100px;
-  margin-inline: auto;
-  padding: 32px 20px 64px;
+h1, h2, h3 {
+  font-family: var(--fonte-titulo), var(--fonte-corpo), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
 }
 
-a { color: var(--acento); }
+p { margin: 0; }
+
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
 :focus-visible {
   outline: 2px solid var(--acento);
   outline-offset: 2px;
+  border-radius: var(--r-sm);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
+/* =========================================================
+   estrutura
+   ========================================================= */
 
-/* ---------- texto de apoio ---------- */
-.apoio { color: var(--tinta-fraca); max-width: 60ch; margin: 4px 0 0; }
-
-/* ---------- tela de entrada ---------- */
-.centralizado {
-  min-height: 100dvh;
+.interno {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--s6) var(--s5) var(--s8);
   display: grid;
-  place-items: center;
-  padding: 24px 20px;
+  gap: var(--s5);
 }
 
-.cartao-entrada {
-  width: 100%;
-  max-width: 420px;
+.apoio { color: var(--tinta-fraca); }
+.meta  { font-size: var(--t-13); color: var(--tinta-fraca); }
+
+/* =========================================================
+   cabecalho e abas
+   ========================================================= */
+
+.topo-app {
+  display: grid;
+  gap: var(--s4);
+}
+
+.topo-linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+
+.topo-app h1 { font-size: var(--t-28); }
+
+.identidade {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  font-size: var(--t-13);
+  color: var(--tinta-fraca);
+}
+
+/* As abas carregam o fio que separa o cabecalho do conteudo.
+   Um elemento, duas funcoes: navegacao e divisao. */
+.abas {
+  display: flex;
+  gap: var(--s5);
+  border-bottom: 1px solid var(--linha);
+  font-size: var(--t-13);
+}
+
+.abas > * {
+  padding-bottom: var(--s2);
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--tinta-fraca);
+  text-decoration: none;
+}
+
+.abas > a:hover { color: var(--tinta); }
+
+.abas [aria-current="page"] {
+  color: var(--tinta);
+  border-bottom-color: var(--acento);
+  font-weight: 500;
+}
+
+/* =========================================================
+   a chamada — o unico lugar onde a tela levanta a voz
+
+   E ela que responde a pergunta que faz alguem abrir o app:
+   tem alguma coisa pra cobrar hoje? O quadro e mobilia.
+   ========================================================= */
+
+.chamada {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+  flex-wrap: wrap;
   background: var(--superficie);
   border: 1px solid var(--linha);
-  border-radius: 10px;
-  padding: 32px 28px;
+  border-left: 3px solid var(--linha-forte);
+  border-radius: var(--r-lg);
+  padding: var(--s4) var(--s5);
 }
 
-.cartao-entrada h1 { font-size: 22px; margin: 0; line-height: 1.25; }
-.cartao-entrada .apoio { margin-bottom: 26px; font-size: 14px; }
+.chamada.cobrar { border-left-color: var(--atraso); }
 
-/* ---------- formulario ---------- */
-.formulario { display: flex; flex-direction: column; gap: 18px; }
+.chamada-texto { display: grid; gap: var(--s1); min-width: 0; }
 
-.campo { display: flex; flex-direction: column; gap: 6px; }
-.campo label { font-size: 13px; font-weight: 600; }
-
-.campo input,
-.campo select,
-.campo textarea {
-  font: inherit;
-  color: var(--tinta);
-  background: var(--fundo);
-  border: 1px solid var(--linha);
-  border-radius: 6px;
-  padding: 10px 12px;
-  width: 100%;
+.chamada h2 {
+  font-size: var(--t-21);
+  font-weight: 600;
 }
 
-.campo input:focus-visible,
-.campo select:focus-visible,
-.campo textarea:focus-visible {
-  border-color: var(--acento);
-  outline: 2px solid var(--acento);
-  outline-offset: 1px;
-}
+.chamada.cobrar h2 { color: var(--atraso); }
 
-.dica { font-size: 12px; color: var(--tinta-fraca); }
-
-/* ---------- recados ---------- */
-.recado {
-  margin: 0;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  border: 1px solid var(--linha);
-}
-.recado.erro  { color: var(--atraso); border-color: var(--atraso); }
-.recado.aviso { color: var(--acento); border-color: var(--acento); }
-
-/* ---------- botoes ---------- */
-.acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+/* =========================================================
+   botoes e links de acao
+   ========================================================= */
 
 .botao, .botao-vazado {
   font: inherit;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 10px 18px;
+  font-size: var(--t-13);
+  font-weight: 500;
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s4);
   cursor: pointer;
   border: 1px solid var(--acento);
-  flex: 1 1 auto;
-  min-width: 130px;
+  white-space: nowrap;
 }
 
 .botao { background: var(--acento); color: var(--contraste-acento); }
 .botao-vazado { background: transparent; color: var(--acento); }
 
-.botao:disabled, .botao-vazado:disabled { opacity: .55; cursor: progress; }
+.botao:disabled, .botao-vazado:disabled { opacity: 0.55; cursor: progress; }
 
-/* ---------- topo do app ---------- */
-.topo-app {
+.acoes { display: flex; gap: var(--s3); flex-wrap: wrap; }
+
+.link-discreto {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: var(--t-12);
+  color: var(--tinta-fraca);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-discreto:hover { color: var(--atraso); }
+
+/* =========================================================
+   campos
+   ========================================================= */
+
+.formulario { display: grid; gap: var(--s4); }
+
+.campo { display: grid; gap: var(--s1); }
+
+.campo > span,
+.campo > label {
+  font-size: var(--t-13);
+  color: var(--tinta-fraca);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  font: inherit;
+  font-size: var(--t-15);
+  color: var(--tinta);
+  background: var(--superficie);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s3);
+  width: 100%;
+}
+
+.campo textarea { resize: vertical; line-height: 1.5; }
+
+.dica { font-size: var(--t-12); color: var(--tinta-fraca); }
+
+.cartao-form {
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  display: grid;
+  gap: var(--s4);
+}
+
+.linha-dupla, .linha-tripla { display: grid; gap: var(--s4); }
+
+@media (min-width: 640px) {
+  .linha-dupla  { grid-template-columns: 1fr 1fr; }
+  .linha-tripla { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* recados */
+.recado {
+  font-size: var(--t-13);
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s3);
+  border: 1px solid;
+}
+
+.erro  { color: var(--atraso); border-color: var(--atraso); }
+.aviso { color: var(--acento); border-color: var(--acento); }
+
+/* =========================================================
+   quadro
+
+   As colunas nao tem moldura. Cinco caixas iguais lado a lado
+   competem entre si e nao dizem nada; um fio em cima ja separa.
+   A moldura aparece so quando ha um card no ar, porque ai ela
+   vira informacao: "pode soltar aqui".
+   ========================================================= */
+
+.quadro {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 940px) {
+  .quadro { grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: start; }
+}
+
+.coluna {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+  min-height: 7rem;
+  padding: var(--s3) var(--s2) var(--s4);
+  border-top: 2px solid var(--linha-forte);
+  border-radius: 2px;
+}
+
+.coluna[data-status="proposta"] { border-top-color: var(--proposta); }
+
+.coluna > h2 {
+  font-family: var(--fonte-corpo), sans-serif;
+  font-size: var(--t-13);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--tinta-fraca);
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--linha);
-  margin-bottom: 28px;
+  align-items: center;
+  gap: var(--s2);
 }
-.topo-app h1 { font-size: 22px; margin: 0; }
-.topo-app .botao-vazado { flex: none; min-width: 0; }
 
-/* ---------- estado vazio ---------- */
-.vazio {
+.coluna[data-status="proposta"] > h2 { color: var(--proposta); }
+
+.contador { font-weight: 400; }
+
+/* =========================================================
+   card
+   ========================================================= */
+
+.card {
   background: var(--superficie);
-  border: 1px dashed var(--linha);
-  border-radius: 10px;
-  padding: 36px 28px;
+  border: 1px solid var(--linha);
+  border-radius: var(--r-md);
+  padding: var(--s3);
+  display: grid;
+  gap: var(--s1);
 }
-.vazio h2 { margin: 0 0 8px; font-size: 17px; }
-.vazio p { margin: 0; color: var(--tinta-fraca); max-width: 58ch; }
+
+.coluna[data-status="proposta"] .card {
+  border-color: color-mix(in srgb, var(--proposta) 45%, var(--linha));
+}
+
+.coluna[data-status="recusado"] .card { opacity: 0.7; }
+
+/* O atraso nao e so cor: o card ganha um fio grosso a esquerda e
+   o texto muda de "Follow up em" para "venceu em". Quem nao
+   distingue a cor continua entendendo. */
+.card.atrasado { border-left: 3px solid var(--atraso); }
+
+.card h3 { font-size: var(--t-17); }
+.card .apoio { font-size: var(--t-13); }
+
+.card .nota {
+  margin-top: var(--s2);
+  padding-top: var(--s2);
+  border-top: 1px solid var(--linha);
+  font-size: var(--t-13);
+  color: var(--tinta-fraca);
+  white-space: pre-wrap;
+}
+
+.aviso-atraso { color: var(--atraso); font-weight: 500; }
+
+.rodape-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s3);
+  margin-top: var(--s2);
+  font-size: var(--t-12);
+}
+
+.rodape-card a { color: var(--acento); }
+
+/* =========================================================
+   arrastar
+   ========================================================= */
+
+.pega { cursor: grab; touch-action: none; }
+.pega:active { cursor: grabbing; }
+
+.coluna.disponivel {
+  outline: 1px dashed var(--linha-forte);
+  outline-offset: 4px;
+  border-radius: var(--r-md);
+}
+
+.coluna.alvo {
+  outline: 2px dashed var(--acento);
+  background: color-mix(in srgb, var(--acento) 8%, transparent);
+}
+
+.card.fantasma { opacity: 0.3; }
+
+/* Sem inclinacao: a sombra ja diz que o card esta no ar. */
+.card.flutuando {
+  cursor: grabbing;
+  box-shadow: var(--sombra);
+  border-color: var(--acento);
+}
+
+/* =========================================================
+   metricas
+   ========================================================= */
+
+.placar { display: grid; gap: var(--s4); grid-template-columns: 1fr; }
+
+@media (min-width: 720px) {
+  .placar { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ficha {
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  display: grid;
+  gap: var(--s1);
+}
+
+.rotulo-ficha { font-size: var(--t-13); color: var(--tinta-fraca); }
+
+/* Tres numeros soltos nao viram grafico. Numero grande e o grafico. */
+.numerao {
+  font-family: var(--fonte-titulo), sans-serif;
+  font-size: var(--t-44);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ficha.em-atraso { border-color: var(--atraso); }
+.ficha.em-atraso .numerao { color: var(--atraso); }
+
+.funil ol {
+  list-style: none;
+  margin: var(--s4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s3);
+}
+
+.funil li {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.funil h2 { font-size: var(--t-21); }
+
+.nome-etapa { font-size: var(--t-13); }
+
+.trilho {
+  background: var(--superficie-2);
+  border-radius: 999px;
+  height: 12px;
+  overflow: hidden;
+}
+
+/* Uma serie, uma cor. Pintar cada etapa de um tom diferente faria
+   parecer que a cor significa algo, e nao significa. */
+.barra {
+  display: block;
+  height: 100%;
+  background: var(--acento);
+  border-radius: 999px;
+  min-width: 2px;
+}
+
+.funil li[data-status="proposta"] .barra { background: var(--proposta); }
+.funil li[data-status="recusado"] .barra { background: var(--tinta-fraca); }
+
+.valor-etapa { text-align: right; font-weight: 600; font-size: var(--t-15); }
+
+.criterio {
+  font-size: var(--t-13);
+  color: var(--tinta-fraca);
+  max-width: 62ch;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--linha);
+}
+
+.criterio code {
+  font-size: 0.9em;
+  background: var(--superficie-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* =========================================================
+   vazio e entrada
+   ========================================================= */
+
+.vazio {
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--r-lg);
+  padding: var(--s7) var(--s5);
+  display: grid;
+  gap: var(--s2);
+  justify-items: start;
+  color: var(--tinta-fraca);
+}
+
+.vazio h2 { font-size: var(--t-21); color: var(--tinta); }
+
+.centralizado {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--s5);
+}
+
+.cartao-entrada {
+  width: min(26rem, 100%);
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--r-lg);
+  padding: var(--s6);
+  display: grid;
+  gap: var(--s4);
+}
+
+.cartao-entrada h1 { font-size: var(--t-28); }
+.cartao-entrada .acoes > * { flex: 1 1 auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* O gatilho do formulario e uma faixa tracejada na largura toda,
+   no lugar onde o conteudo vai entrar. Um botao solido aqui
+   brigaria com o ciano da chamada e com os cards. */
+.adicionar {
+  font: inherit;
+  font-size: var(--t-13);
+  text-align: left;
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  color: var(--tinta-fraca);
+  background: transparent;
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+}
+
+.adicionar:hover {
+  color: var(--acento);
+  border-color: var(--acento);
+}
