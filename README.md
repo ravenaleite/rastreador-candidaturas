@@ -104,6 +104,18 @@ middleware.ts     revalida a sessão e protege as rotas
 .github/workflows/testes.yml
 ```
 
+## Como este projeto foi construído
+
+Usei IA como par de programação, e está registrado nos commits — por
+isso o Claude aparece como contribuidor. Trabalhei com a regra de não
+aceitar nada que eu não soubesse explicar.
+
+As duas decisões acima são as principais, mas qualquer parte do código
+eu consigo justificar: por que a consulta do painel não filtra por
+usuário, por que `getUser()` e não `getSession()`, por que
+`estaAtrasado` recebe a data como parâmetro em vez de olhar o relógio,
+e por que o CI quebrou no `npm ci` e como eu achei.
+
 ---
 
 Projeto da mentoria DevVagas, por [Ravena Leite](https://www.linkedin.com/in/ravena-leite-3a5804399/).
