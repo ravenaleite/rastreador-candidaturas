@@ -138,9 +138,14 @@ function Coluna({
         {ROTULO[status]} <span className="contador">{cards.length}</span>
       </h2>
 
-      {cards.map((c) => (
-        <Card key={c.id} candidatura={c} hoje={hoje} />
-      ))}
+      {cards.length === 0 ? (
+        /* Coluna vazia precisa mostrar que e um alvo. Sem isso a
+           pessoa ve so o titulo e nao sabe onde soltar — foi
+           exatamente o que aconteceu no primeiro teste de uso. */
+        <p className="solte-aqui">Solte um card aqui</p>
+      ) : (
+        cards.map((c) => <Card key={c.id} candidatura={c} hoje={hoje} />)
+      )}
     </section>
   );
 }

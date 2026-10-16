@@ -562,3 +562,16 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; 
   color: var(--acento);
   border-color: var(--acento);
 }
+
+.solte-aqui {
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--r-md);
+  padding: var(--s5) var(--s3);
+  text-align: center;
+  font-size: var(--t-12);
+  color: var(--tinta-fraca);
+}
+
+/* Enquanto ha card no ar, o alvo da coluna vazia fica evidente. */
+.coluna.disponivel .solte-aqui { border-color: var(--acento); }
+.coluna.alvo .solte-aqui { color: var(--acento); }
