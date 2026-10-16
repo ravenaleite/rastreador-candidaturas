@@ -12,6 +12,8 @@ por e-mail.
 
 ![Arrastando um card entre as colunas do quadro](docs/kanban.gif)
 
+![Tela de métricas: total, taxa de resposta, follow up vencido e quantas candidaturas em cada etapa](docs/metricas.png)
+
 ## O que ele faz
 
 - Login por e-mail e senha, com isolamento garantido no banco

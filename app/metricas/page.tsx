@@ -82,10 +82,15 @@ export default async function PaginaMetricas() {
                   <li key={s} data-status={s}>
                     <span className="nome-etapa">{ROTULO[s]}</span>
                     <span className="trilho">
-                      <span
-                        className="barra"
-                        style={{ width: `${(quantas / maior) * 100}%` }}
-                      />
+                      {/* Zero nao desenha marca nenhuma. A barra tem uma
+                          largura minima para o valor 1 nao sumir, e essa
+                          minima faria o zero parecer que tem algo. */}
+                      {quantas > 0 && (
+                        <span
+                          className="barra"
+                          style={{ width: `${(quantas / maior) * 100}%` }}
+                        />
+                      )}
                     </span>
                     <span className="valor-etapa">{quantas}</span>
                   </li>
