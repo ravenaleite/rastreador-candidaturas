@@ -63,6 +63,22 @@ export default function Quadro({
     setArrastando(achado ?? null);
   }
 
+  /**
+   * Mover um card. Serve ao arrasto e ao seletor "Mover para", que
+   * existe porque arrastar nao pode ser o unico caminho: no celular
+   * as colunas empilham, e levar um card de Aplicado ate Proposta
+   * com o dedo atravessa varias telas de rolagem. Quem usa teclado
+   * tem o mesmo problema.
+   */
+  function mover(card: Candidatura, destino: Status) {
+    // A mesma regra que roda no servidor e nos testes.
+    if (!podeMover(card.status, destino)) return;
+    iniciar(async () => {
+      aplicarOtimista({ id: card.id, para: destino });
+      await moverCandidatura(card.id, destino);
+    });
+  }
+
   function aoSoltar(evento: DragEndEvent) {
     setArrastando(null);
 
@@ -70,16 +86,7 @@ export default function Quadro({
     if (typeof destino !== "string" || !ehStatus(destino)) return;
 
     const card = itens.find((c) => c.id === evento.active.id);
-    if (!card) return;
-
-    // A mesma regra que roda no servidor e nos testes. Aqui ela evita
-    // a animacao enganosa de um card que voltaria sozinho.
-    if (!podeMover(card.status, destino)) return;
-
-    iniciar(async () => {
-      aplicarOtimista({ id: card.id, para: destino });
-      await moverCandidatura(card.id, destino);
-    });
+    if (card) mover(card, destino);
   }
 
   return (
@@ -102,6 +109,7 @@ export default function Quadro({
             status={status}
             cards={itens.filter((c) => c.status === status)}
             hoje={hoje}
+            aoMover={mover}
             podeReceber={arrastando ? podeMover(arrastando.status, status) : false}
           />
         ))}
@@ -121,11 +129,13 @@ function Coluna({
   cards,
   hoje,
   podeReceber,
+  aoMover,
 }: {
   status: Status;
   cards: Candidatura[];
   hoje: string;
   podeReceber: boolean;
+  aoMover: (card: Candidatura, destino: Status) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
@@ -145,7 +155,9 @@ function Coluna({
            exatamente o que aconteceu no primeiro teste de uso. */
         <p className="solte-aqui">Solte um card aqui</p>
       ) : (
-        cards.map((c) => <Card key={c.id} candidatura={c} hoje={hoje} />)
+        cards.map((c) => (
+          <Card key={c.id} candidatura={c} hoje={hoje} aoMover={aoMover} />
+        ))
       )}
     </section>
   );
@@ -155,10 +167,12 @@ function Card({
   candidatura: c,
   hoje,
   flutuando = false,
+  aoMover,
 }: {
   candidatura: Candidatura;
   hoje: string;
   flutuando?: boolean;
+  aoMover?: (card: Candidatura, destino: Status) => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: c.id,
@@ -196,6 +210,8 @@ function Card({
 
       {c.observacoes && <p className="nota">{c.observacoes}</p>}
 
+      {!flutuando && aoMover && <SeletorMover candidatura={c} aoMover={aoMover} />}
+
       {!flutuando && (
         <div className="rodape-card">
           {c.link ? (
@@ -217,5 +233,43 @@ function Card({
         </div>
       )}
     </article>
+  );
+}
+
+/**
+ * O segundo caminho para mover um card, sem arrastar.
+ *
+ * Lista so os destinos que podeMover aceita, entao um card em
+ * "recusado" nao mostra seletor nenhum — a mesma regra do quadro,
+ * dita de outro jeito.
+ */
+function SeletorMover({
+  candidatura: c,
+  aoMover,
+}: {
+  candidatura: Candidatura;
+  aoMover: (card: Candidatura, destino: Status) => void;
+}) {
+  const destinos = STATUS.filter((s) => podeMover(c.status, s));
+  if (destinos.length === 0) return null;
+
+  return (
+    <label className="mover">
+      <span className="apenas-leitor">Mover {c.empresa} para</span>
+      <select
+        value=""
+        onChange={(e) => {
+          const destino = e.target.value;
+          if (ehStatus(destino)) aoMover(c, destino);
+        }}
+      >
+        <option value="">Mover para…</option>
+        {destinos.map((s) => (
+          <option key={s} value={s}>
+            {ROTULO[s]}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

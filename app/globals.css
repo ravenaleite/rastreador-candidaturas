@@ -588,3 +588,42 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; 
 /* A tela de editar e uma coluna de formulario, nao um quadro de
    cinco colunas: linha longa demais cansa de ler e de preencher. */
 .estreito { max-width: 46rem; }
+
+/* ---------- mover sem arrastar ---------- */
+
+.mover { margin-top: var(--s2); }
+
+.mover select {
+  font: inherit;
+  font-size: var(--t-12);
+  color: var(--tinta-fraca);
+  background: var(--superficie-2);
+  border: 1px solid var(--linha);
+  border-radius: var(--r-sm);
+  padding: var(--s1) var(--s2);
+  width: 100%;
+}
+
+.mover select:hover { color: var(--tinta); border-color: var(--linha-forte); }
+
+/* Visivel so para leitor de tela: o <select> ja mostra "Mover para",
+   mas sem o nome da empresa quem navega por audio nao sabe qual card
+   esta movendo. */
+.apenas-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* No celular a coluna ocupa a tela inteira; o alvo de soltar nao
+   precisa de 7rem de altura so para existir. */
+@media (max-width: 939px) {
+  .coluna { min-height: 0; }
+  .solte-aqui { padding: var(--s3); }
+}

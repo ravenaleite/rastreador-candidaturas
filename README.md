@@ -18,7 +18,11 @@ por e-mail.
 
 - Login por e-mail e senha, com isolamento garantido no banco
 - Cadastro com empresa, cargo, link da vaga, data, status e observações
-- Quadro Kanban com as cinco etapas, arrastando o card entre elas
+- Quadro Kanban com as cinco etapas, arrastando o card entre elas, ou
+  pelo seletor "Mover para" de cada card — arrastar não é o único
+  caminho, o que importa no celular e para quem usa teclado
+- Edição de uma candidatura já cadastrada, sem precisar apagar e
+  refazer
 - Destaque visual para o follow up que já venceu, e uma chamada no topo
   dizendo o que precisa ser cobrado hoje
 - Tela de métricas: total, taxa de resposta e quantas em cada etapa
@@ -86,6 +90,21 @@ Três consequências práticas:
 O limite honesto: esses testes cobrem as regras, não a fiação. Que a
 tela chama a action certa e que a RLS está ligada em produção foi
 verificado à mão, não por teste automatizado.
+
+## No celular
+
+As colunas empilham abaixo de 940px e o formulário abaixo de 640px.
+Mas responsivo não basta para um quadro Kanban: com uma coluna por
+tela, levar um card de "Aplicado" até "Proposta" com o dedo
+atravessaria várias telas de rolagem.
+
+Por isso cada card tem um seletor **Mover para**, que lista apenas os
+destinos que a regra aceita — um card em "recusado" não mostra
+seletor nenhum. É a mesma função `podeMover` que governa o arrasto,
+dita de outro jeito.
+
+O mesmo seletor resolve o caso de quem navega por teclado ou leitor
+de tela, onde arrastar também é um gesto ruim.
 
 ## Os testes
 
