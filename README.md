@@ -87,12 +87,60 @@ O limite honesto: esses testes cobrem as regras, não a fiação. Que a
 tela chama a action certa e que a RLS está ligada em produção foi
 verificado à mão, não por teste automatizado.
 
+## Os testes
+
+São 51, rodam em menos de um segundo e não sobem banco nem navegador.
+Isso é possível porque o que eles testam são funções puras: recebem
+dados, devolvem dados, não olham relógio nem consultam nada.
+
+| Arquivo | Testes | O que garante |
+|---|---|---|
+| `lib/status.test.ts` | 16 | Quais transições o quadro aceita, e que "recusado" é ponto final. Que o follow up vencido é detectado, e que uma candidatura encerrada não é cobrada. |
+| `lib/validacao.test.ts` | 17 | Que o formulário recusa data que não existe no calendário, follow up anterior à candidatura, status inventado e texto além do limite. Que o link ganha `https://` quando falta. |
+| `lib/metricas.test.ts` | 7 | O total, a contagem por etapa e a taxa de resposta — inclusive que lista vazia devolve 0% em vez de `NaN%`. |
+| `lib/data.test.ts` | 11 | Diferença de dias, formatação, e que "hoje" é o dia em Brasília, não no fuso do servidor. |
+
+Alguns casos que valem olhar, porque são os que quebram em produção e
+não em desenvolvimento:
+
+- `2026-02-31` passa num teste de formato e não existe no calendário.
+- `2028-02-29` existe; `2027-02-29` não.
+- Lista vazia na taxa de resposta: `0/0` é `NaN`, e a primeira tela de
+  quem acabou de criar a conta mostraria "NaN%".
+- Diferença de dias em fuso local erra por um nos dias de mudança de
+  horário, quando o dia tem 23 ou 25 horas.
+
+```bash
+npm test          # roda uma vez
+npm run test:watch  # roda a cada alteração
+```
+
+O GitHub Actions executa `npm ci` e `npm test` a cada push, numa
+máquina limpa. É isso que o badge no topo está afirmando.
+
+### O que os testes não cobrem
+
+Eles cobrem as regras, não a fiação. Nenhum teste garante que a tela
+chama a ação certa, que o arrastar grava no banco, ou que a RLS está
+mesmo ligada em produção. Isso pediria teste de ponta a ponta, que
+este projeto não tem.
+
+Essas três coisas foram verificadas à mão: a RLS com duas contas
+distintas no app publicado, onde a segunda não enxergou nenhuma linha
+da primeira; e o arrastar e o cadastro abrindo a tela e usando.
+
+Dois defeitos reais apareceram nessa verificação manual e nenhum dos
+51 testes teria pegado, porque nenhum dos dois é regra de negócio: o
+formulário apagava tudo o que tinha sido digitado quando a validação
+recusava, e a coluna vazia não mostrava onde soltar o card.
+
 ## Estrutura
 
 ```
 app/
   entrar/         login e cadastro (server actions)
-  painel/         quadro Kanban e cadastro de candidatura
+  painel/         quadro Kanban, cadastro e campos do formulário
+  candidatura/    edição de uma candidatura já criada
   metricas/       números e funil por etapa
 lib/
   tipos.ts        os cinco status e o formato de uma candidatura

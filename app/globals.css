@@ -209,6 +209,13 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; 
   cursor: pointer;
   border: 1px solid var(--acento);
   white-space: nowrap;
+  /* Um <a> tambem pode ser botao — o Cancelar da tela de editar.
+     Sem isto ele herda o sublinhado de link e nao alinha a altura
+     com o <button> ao lado. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .botao { background: var(--acento); color: var(--contraste-acento); }
@@ -575,3 +582,9 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; 
 /* Enquanto ha card no ar, o alvo da coluna vazia fica evidente. */
 .coluna.disponivel .solte-aqui { border-color: var(--acento); }
 .coluna.alvo .solte-aqui { color: var(--acento); }
+
+.acoes-card { display: flex; align-items: center; gap: var(--s3); }
+
+/* A tela de editar e uma coluna de formulario, nao um quadro de
+   cinco colunas: linha longa demais cansa de ler e de preencher. */
+.estreito { max-width: 46rem; }

@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { criarCandidatura, type EstadoCadastro } from "./acoes";
-import { STATUS, ROTULO } from "@/lib/tipos";
+import CamposCandidatura from "./campos";
+import type { EntradaCandidatura } from "@/lib/validacao";
 
 const INICIAL: EstadoCadastro = {};
 
@@ -36,81 +37,19 @@ export default function FormularioNova({
     );
   }
 
+  const vazio: EntradaCandidatura = {
+    empresa: "",
+    cargo: "",
+    link: "",
+    data_candidatura: hoje,
+    status: "aplicado",
+    follow_up: "",
+    observacoes: "",
+  };
+
   return (
     <form ref={formulario} action={acao} className="cartao-form">
-      <div className="linha-dupla">
-        <label className="campo">
-          <span>Empresa</span>
-          <input
-            name="empresa"
-            required
-            maxLength={120}
-            autoFocus
-            defaultValue={estado.valores?.empresa ?? ""}
-          />
-        </label>
-
-        <label className="campo">
-          <span>Cargo</span>
-          <input
-            name="cargo"
-            required
-            maxLength={120}
-            defaultValue={estado.valores?.cargo ?? ""}
-          />
-        </label>
-      </div>
-
-      <label className="campo">
-        <span>Link da vaga</span>
-        <input
-          name="link"
-          placeholder="linkedin.com/jobs/..."
-          defaultValue={estado.valores?.link ?? ""}
-        />
-      </label>
-
-      <div className="linha-tripla">
-        <label className="campo">
-          <span>Data da candidatura</span>
-          <input
-            type="date"
-            name="data_candidatura"
-            required
-            defaultValue={estado.valores?.data_candidatura || hoje}
-          />
-        </label>
-
-        <label className="campo">
-          <span>Follow up</span>
-          <input
-            type="date"
-            name="follow_up"
-            defaultValue={estado.valores?.follow_up ?? ""}
-          />
-        </label>
-
-        <label className="campo">
-          <span>Status</span>
-          <select name="status" defaultValue={estado.valores?.status || "aplicado"}>
-            {STATUS.map((s) => (
-              <option key={s} value={s}>
-                {ROTULO[s]}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <label className="campo">
-        <span>Observações</span>
-        <textarea
-          name="observacoes"
-          rows={3}
-          maxLength={1000}
-          defaultValue={estado.valores?.observacoes ?? ""}
-        />
-      </label>
+      <CamposCandidatura valores={estado.valores ?? vazio} />
 
       {estado.erro && (
         <p className="recado erro" role="alert">

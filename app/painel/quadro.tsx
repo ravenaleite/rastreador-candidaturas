@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useOptimistic, useTransition } from "react";
 import {
   DndContext,
@@ -204,10 +205,15 @@ function Card({
           ) : (
             <span />
           )}
-          <form action={apagarCandidatura}>
-            <input type="hidden" name="id" value={c.id} />
-            <button className="link-discreto">Apagar</button>
-          </form>
+          <span className="acoes-card">
+            <Link className="link-discreto" href={`/candidatura/${c.id}`}>
+              Editar
+            </Link>
+            <form action={apagarCandidatura}>
+              <input type="hidden" name="id" value={c.id} />
+              <button className="link-discreto">Apagar</button>
+            </form>
+          </span>
         </div>
       )}
     </article>
