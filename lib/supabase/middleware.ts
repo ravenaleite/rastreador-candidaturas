@@ -1,8 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Paginas que podem ser abertas sem estar logado. */
+/**
+ * Paginas que podem ser abertas sem estar logado. Quem ja esta
+ * logado e mandado delas para o painel.
+ */
 const PUBLICAS = ["/entrar"];
+
+/**
+ * Rotas abertas para todos, logado ou nao, sem redirecionar: a que
+ * recebe os links de e-mail precisa rodar mesmo que ja exista sessao.
+ */
+const LIVRES = ["/auth/"];
 
 /**
  * Roda antes de cada requisicao. Faz duas coisas:
@@ -47,6 +56,7 @@ export async function atualizarSessao(requisicao: NextRequest) {
   } = await supabase.auth.getUser();
 
   const caminho = requisicao.nextUrl.pathname;
+  if (LIVRES.some((p) => caminho.startsWith(p))) return resposta;
   const ehPublica = PUBLICAS.some((p) => caminho.startsWith(p));
 
   if (!user && !ehPublica) {

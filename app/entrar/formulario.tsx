@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { entrar, cadastrar, type EstadoForm } from "./acoes";
 
 const INICIAL: EstadoForm = {};
 
-export default function Formulario() {
+export default function Formulario({ linkInvalido = false }: { linkInvalido?: boolean }) {
   const [estadoEntrar, acaoEntrar, entrando] = useActionState(entrar, INICIAL);
   const [estadoCriar, acaoCriar, criando] = useActionState(cadastrar, INICIAL);
 
@@ -36,8 +37,19 @@ export default function Formulario() {
           minLength={6}
           required
         />
-        <span className="dica">Mínimo de 6 caracteres.</span>
+        <span className="dica">
+          Mínimo de 6 caracteres. ·{" "}
+          <Link href="/entrar/esqueci" className="link-discreto">
+            Esqueci minha senha
+          </Link>
+        </span>
       </div>
+
+      {linkInvalido && !estado.erro && !estado.aviso && (
+        <p className="recado erro" role="alert">
+          Esse link expirou ou já foi usado. Peça um novo em “Esqueci minha senha”.
+        </p>
+      )}
 
       {estado.erro && (
         <p className="recado erro" role="alert">
